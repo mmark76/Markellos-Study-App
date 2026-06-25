@@ -21,7 +21,7 @@ The project keeps the learning workflow of the original study app while starting
 3. Add flashcards to `src/data/flashcards.ts`.
 4. Optionally add built-in links to `src/features/study-materials/studyMaterials.ts`.
 
-The data model is generic and may be used for psychology, history, science, languages, professional training, or any other subject.
+The data model is generic and can be used for any academic, professional, or personal study subject.
 
 ## Development
 
