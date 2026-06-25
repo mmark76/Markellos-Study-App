@@ -81,7 +81,9 @@ export function parseFlashcardsSpreadsheet(text: string, units: readonly StudyUn
   const rows = parseDelimitedText(text);
   if (rows.length < 2) throw new Error("The file contains no flashcards");
 
-  const unitsByNumber = new Map(units.map((unit) => [unit.number, unit]));
+  const unitsByNumber = new Map<number, StudyUnit>(
+    units.map((unit) => [unit.number, unit] as const),
+  );
   const counters = new Map<number, number>();
 
   return rows.slice(1).map((row, rowIndex) => {
