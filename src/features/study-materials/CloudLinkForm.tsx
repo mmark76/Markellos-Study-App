@@ -9,10 +9,12 @@ import {
 } from "./studyMaterials";
 
 export function CloudLinkForm({
-  links,
+  savedLinks,
+  existingLinks,
   onMessage,
 }: {
-  links: readonly StudyMaterialLink[];
+  savedLinks: readonly StudyMaterialLink[];
+  existingLinks: readonly StudyMaterialLink[];
   onMessage: (message: string) => void;
 }) {
   const [title, setTitle] = useState("");
@@ -30,14 +32,14 @@ export function CloudLinkForm({
         title: normalizeStudyMaterialTitle(title),
         url: normalizeStudyMaterialUrl(url),
       };
-      if (links.some((link) => link.url === item.url)) {
+      if (existingLinks.some((link) => link.url === item.url)) {
         onMessage("This link has already been added.");
         return;
       }
 
       await studyDatabase.settings.put({
         key: STUDY_MATERIALS_SETTING_KEY,
-        value: [...links, item],
+        value: [...savedLinks, item],
       });
       setTitle("");
       setUrl("");
