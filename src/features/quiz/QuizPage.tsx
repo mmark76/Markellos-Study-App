@@ -26,12 +26,12 @@ export function QuizPage() {
     }
   }
 
-  if (questions.length === 0) return <section className="empty-state"><h2>Το quiz δεν είναι ακόμη διαθέσιμο</h2><p>Χρειάζονται τουλάχιστον τέσσερις κάρτες με διαφορετικές απαντήσεις.</p></section>;
-  if (finished) return <section className="empty-state"><h2>Αποτέλεσμα: {score} / {questions.length}</h2><button className="button primary" onClick={() => window.location.reload()}>Νέο quiz</button></section>;
+  if (questions.length === 0) return <section className="empty-state"><h2>The quiz is not available yet</h2><p>At least four cards with different answers are required.</p></section>;
+  if (finished) return <section className="empty-state"><h2>Result: {score} / {questions.length}</h2><button className="button primary" onClick={() => window.location.reload()}>New quiz</button></section>;
 
   return (
     <article className="quiz-card">
-      <p className="eyebrow">Ερώτηση {index + 1} από {questions.length}</p>
+      <p className="eyebrow">Question {index + 1} of {questions.length}</p>
       <h2>{question.question}</h2>
       <div className="option-grid">{question.options.map((option) => <button className="option-button" key={option} onClick={() => void answer(option)}>{option}</button>)}</div>
     </article>
