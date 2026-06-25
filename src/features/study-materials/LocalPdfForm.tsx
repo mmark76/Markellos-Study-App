@@ -29,6 +29,7 @@ export function LocalPdfForm({
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     if (!file || lock.current) return;
 
     if (!isPdfFile(file)) {
@@ -62,7 +63,7 @@ export function LocalPdfForm({
       setFile(null);
       setTitle("");
       setRightsConfirmed(false);
-      const input = event.currentTarget.elements.namedItem("pdf-file") as HTMLInputElement | null;
+      const input = form.elements.namedItem("pdf-file") as HTMLInputElement | null;
       if (input) input.value = "";
       onMessage("The PDF was added to this device.");
     } catch {
