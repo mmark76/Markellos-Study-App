@@ -1,16 +1,16 @@
-import { useMemo, useRef, useState } from "react";
-import { flashcards } from "../../data/flashcards";
+import { useRef, useState } from "react";
 import { studyDatabase } from "../../infrastructure/database/studyDatabase";
 import type { Rating } from "../../shared/types/models";
 import { createId } from "../../shared/utils/id";
+import { useStudyContent } from "../content-import/useStudyContent";
 import { scheduleReview } from "../review/spacedRepetition";
 
 export function FlashcardsPage() {
+  const { flashcards: cards } = useStudyContent();
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [message, setMessage] = useState("");
   const saving = useRef(false);
-  const cards = useMemo(() => flashcards, []);
   const card = cards[index];
 
   async function rate(rating: Rating) {
@@ -36,7 +36,7 @@ export function FlashcardsPage() {
     }
   }
 
-  if (!card) return <section className="empty-state"><h2>There are no flashcards</h2><p>Add cards in <code>src/data/flashcards.ts</code>.</p></section>;
+  if (!card) return <section className="empty-state"><h2>There are no flashcards</h2><p>Import a flashcards JSON file from the <strong>Import</strong> page.</p></section>;
 
   return (
     <div className="study-panel">
