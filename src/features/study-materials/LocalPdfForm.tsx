@@ -1,11 +1,11 @@
 import { type ChangeEvent, type FormEvent, useRef, useState } from "react";
 import { studyDatabase } from "../../infrastructure/database/studyDatabase";
+import type { LocalStudyFile } from "../../shared/types/models";
 import { createId } from "../../shared/utils/id";
 import {
   isPdfFile,
   MAX_LOCAL_PDF_SIZE,
   titleFromFileName,
-  type LocalStudyFile,
 } from "./localStudyFiles";
 import { normalizeStudyMaterialTitle } from "./studyMaterials";
 
