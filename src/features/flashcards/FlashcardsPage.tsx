@@ -25,7 +25,7 @@ export function FlashcardsPage() {
           id: createId("session"), mode: "flashcards", startedAt: new Date().toISOString(),
           completedAt: new Date().toISOString(), reviewedCards: cards.length, correctAnswers: 0
         });
-        setMessage("Η συνεδρία ολοκληρώθηκε.");
+        setMessage("The session is complete.");
         setIndex(0);
       } else {
         setIndex(nextIndex);
@@ -36,21 +36,21 @@ export function FlashcardsPage() {
     }
   }
 
-  if (!card) return <section className="empty-state"><h2>Δεν υπάρχουν flashcards</h2><p>Πρόσθεσε κάρτες στο <code>src/data/flashcards.ts</code>.</p></section>;
+  if (!card) return <section className="empty-state"><h2>There are no flashcards</h2><p>Add cards in <code>src/data/flashcards.ts</code>.</p></section>;
 
   return (
     <div className="study-panel">
       <div className="session-progress"><span>{index + 1} / {cards.length}</span><progress max={cards.length} value={index + 1} /></div>
       <article className="flashcard">
-        <p className="eyebrow">Κάρτα {card.number}</p>
+        <p className="eyebrow">Card {card.number}</p>
         <h2>{revealed ? card.answer : card.question}</h2>
         <div className="tag-row">{card.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
       </article>
-      {!revealed ? <button className="button primary" onClick={() => setRevealed(true)}>Εμφάνιση απάντησης</button> : (
+      {!revealed ? <button className="button primary" onClick={() => setRevealed(true)}>Show answer</button> : (
         <div className="rating-grid">
-          <button className="button danger" onClick={() => void rate(0)}>0 · Ξανά</button>
-          <button className="button secondary" onClick={() => void rate(1)}>1 · Δύσκολο</button>
-          <button className="button primary" onClick={() => void rate(2)}>2 · Γνωστό</button>
+          <button className="button danger" onClick={() => void rate(0)}>0 · Again</button>
+          <button className="button secondary" onClick={() => void rate(1)}>1 · Difficult</button>
+          <button className="button primary" onClick={() => void rate(2)}>2 · Known</button>
         </div>
       )}
       <p className="inline-message" role="status">{message}</p>
