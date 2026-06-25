@@ -1,4 +1,5 @@
 import { useLiveQuery } from "dexie-react-hooks";
+import { Link } from "react-router-dom";
 import { studyConfig } from "../../app/studyConfig";
 import { studyDatabase } from "../../infrastructure/database/studyDatabase";
 import { isDue } from "../../shared/utils/date";
@@ -25,7 +26,8 @@ export function HomePage() {
       {units.length === 0 && flashcards.length === 0 ? (
         <section className="empty-state">
           <h3>The content is empty</h3>
-          <p>Use the <strong>Import</strong> page to add units and flashcards.</p>
+          <p>Import units and flashcards to start using the study app.</p>
+          <Link className="button primary" to="/import">Import study content</Link>
         </section>
       ) : null}
     </div>
