@@ -1,5 +1,6 @@
 import { type ChangeEvent, useState } from "react";
 import { studyDatabase } from "../../infrastructure/database/studyDatabase";
+import type { Flashcard, StudyUnit } from "../../shared/types/models";
 import { FlashcardForm } from "./FlashcardForm";
 import {
   IMPORTED_FLASHCARDS_SETTING_KEY,
@@ -25,8 +26,13 @@ export function ContentImportPage() {
     if (!file) return;
 
     try {
-      const spreadsheetUnits = parseUnitsSpreadsheet(await readFile(file));
-      const byNumber = new Map(importedUnits.map((unit) => [unit.number, unit]));
+      const spreadsheetUnits = parseUnitsSpreadsheet(await readFile(file)).map((unit) => {
+        const existing = units.find((candidate) => candidate.number === unit.number);
+        return existing ? { ...unit, id: existing.id } : unit;
+      });
+      const byNumber = new Map<number, StudyUnit>(
+        importedUnits.map((unit) => [unit.number, unit] as const),
+      );
       for (const unit of spreadsheetUnits) byNumber.set(unit.number, unit);
       const nextUnits = [...byNumber.values()].sort((first, second) => first.number - second.number);
       await studyDatabase.settings.put({ key: IMPORTED_UNITS_SETTING_KEY, value: nextUnits });
@@ -44,7 +50,9 @@ export function ContentImportPage() {
 
     try {
       const spreadsheetFlashcards = parseFlashcardsSpreadsheet(await readFile(file), units);
-      const byId = new Map(importedFlashcards.map((card) => [card.id, card]));
+      const byId = new Map<string, Flashcard>(
+        importedFlashcards.map((card) => [card.id, card] as const),
+      );
       for (const card of spreadsheetFlashcards) byId.set(card.id, card);
       const nextFlashcards = [...byId.values()];
       await studyDatabase.settings.put({ key: IMPORTED_FLASHCARDS_SETTING_KEY, value: nextFlashcards });
@@ -58,9 +66,10 @@ export function ContentImportPage() {
 
   async function clearImportedContent() {
     if (!window.confirm("Remove all units and flashcards that you added?")) return;
-    await studyDatabase.transaction("rw", studyDatabase.settings, async () => {
+    await studyDatabase.transaction("rw", studyDatabase.settings, studyDatabase.cardProgress, async () => {
       await studyDatabase.settings.delete(IMPORTED_UNITS_SETTING_KEY);
       await studyDatabase.settings.delete(IMPORTED_FLASHCARDS_SETTING_KEY);
+      await studyDatabase.cardProgress.bulkDelete(importedFlashcards.map((card) => card.id));
     });
     setMessage("Your added study content was removed.");
   }
