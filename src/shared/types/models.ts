@@ -38,6 +38,15 @@ export interface StudySession {
   correctAnswers: number;
 }
 
+export interface LocalStudyFile {
+  id: string;
+  title: string;
+  fileName: string;
+  size: number;
+  createdAt: string;
+  data: Blob;
+}
+
 export interface AppSetting {
   key: string;
   value: unknown;
