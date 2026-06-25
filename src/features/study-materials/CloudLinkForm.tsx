@@ -1,0 +1,78 @@
+import { type FormEvent, useRef, useState } from "react";
+import { studyDatabase } from "../../infrastructure/database/studyDatabase";
+import { createId } from "../../shared/utils/id";
+import {
+  normalizeStudyMaterialTitle,
+  normalizeStudyMaterialUrl,
+  STUDY_MATERIALS_SETTING_KEY,
+  type StudyMaterialLink,
+} from "./studyMaterials";
+
+export function CloudLinkForm({
+  links,
+  onMessage,
+}: {
+  links: readonly StudyMaterialLink[];
+  onMessage: (message: string) => void;
+}) {
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+  const lock = useRef(false);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (lock.current) return;
+    lock.current = true;
+
+    try {
+      const item = {
+        id: createId("material"),
+        title: normalizeStudyMaterialTitle(title),
+        url: normalizeStudyMaterialUrl(url),
+      };
+      if (links.some((link) => link.url === item.url)) {
+        onMessage("This link has already been added.");
+        return;
+      }
+
+      await studyDatabase.settings.put({
+        key: STUDY_MATERIALS_SETTING_KEY,
+        value: [...links, item],
+      });
+      setTitle("");
+      setUrl("");
+      onMessage("The cloud link was added.");
+    } catch {
+      onMessage("Enter a name and a valid web link.");
+    } finally {
+      lock.current = false;
+    }
+  }
+
+  return (
+    <form className="material-form" onSubmit={(event) => void submit(event)}>
+      <label className="field-label">
+        Name
+        <input
+          required
+          maxLength={160}
+          type="text"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder="Example: Cognitive Psychology textbook"
+        />
+      </label>
+      <label className="field-label">
+        Shared link
+        <input
+          required
+          type="url"
+          value={url}
+          onChange={(event) => setUrl(event.target.value)}
+          placeholder="https://..."
+        />
+      </label>
+      <button className="button primary" type="submit">Add cloud link</button>
+    </form>
+  );
+}
