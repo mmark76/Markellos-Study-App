@@ -4,6 +4,18 @@ import { EducationLevelSelector } from "../../features/education/EducationLevelS
 import { useEducationProfile } from "../../features/education/useEducationProfile";
 import { GoogleTranslateBar } from "./GoogleTranslateBar";
 
+const primaryNavigation = [
+  ["/", "Home"],
+  ["/study", "Study & Learn"],
+  ["/library", "Library"],
+] as const;
+
+const utilityNavigation = [
+  ["/import", "Add & import content"],
+  ["/progress", "Progress & statistics"],
+  ["/study-materials", "Manage study materials"],
+] as const;
+
 const footerNavigation = [
   ["/legal/license", "License"],
   ["/legal/privacy", "Privacy"],
@@ -13,16 +25,6 @@ const footerNavigation = [
 
 export function AppLayout() {
   const { profile, isLoading, selectEducationLevel, clearEducationLevel } = useEducationProfile();
-  const navigation = profile ? [
-    ["/", "Home"],
-    ["/units", profile.sectionPlural],
-    ["/flashcards", "Flashcards"],
-    ["/review", "Review"],
-    ["/quiz", "Quiz"],
-    ["/progress", "Progress"],
-    ["/import", "Add content"],
-    ["/study-materials", "Study materials"]
-  ] as const : [];
 
   return (
     <div className="app-shell">
@@ -36,16 +38,24 @@ export function AppLayout() {
           <GoogleTranslateBar />
         </div>
         {profile ? (
-          <>
+          <div className="navigation-row">
             <nav className="main-nav" aria-label="Main navigation">
-              {navigation.map(([to, label]) => (
+              {primaryNavigation.map(([to, label]) => (
                 <NavLink end={to === "/"} key={to} to={to}>{label}</NavLink>
               ))}
             </nav>
-            <button className="text-button" type="button" onClick={() => void clearEducationLevel()}>
-              Change education level
-            </button>
-          </>
+            <details className="utility-menu">
+              <summary>More</summary>
+              <div className="utility-menu-panel">
+                {utilityNavigation.map(([to, label]) => (
+                  <NavLink key={to} to={to}>{label}</NavLink>
+                ))}
+                <button type="button" onClick={() => void clearEducationLevel()}>
+                  Change education level
+                </button>
+              </div>
+            </details>
+          </div>
         ) : null}
       </header>
       <main className="app-main">
