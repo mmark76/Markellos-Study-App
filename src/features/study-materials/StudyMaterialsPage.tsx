@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
+import { useSearchParams } from "react-router-dom";
 import { studyDatabase } from "../../infrastructure/database/studyDatabase";
 import { CloudLinkForm } from "./CloudLinkForm";
 import {
@@ -14,6 +15,10 @@ import {
 } from "./studyMaterials";
 
 export function StudyMaterialsPage() {
+  const [searchParams] = useSearchParams();
+  const addMode = searchParams.get("add");
+  const cloudLinkSectionRef = useRef<HTMLElement>(null);
+  const localPdfSectionRef = useRef<HTMLElement>(null);
   const setting = useLiveQuery(
     () => studyDatabase.settings.get(STUDY_MATERIALS_SETTING_KEY),
     [],
@@ -28,6 +33,21 @@ export function StudyMaterialsPage() {
   );
   const links = [...builtInStudyMaterials, ...savedLinks];
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const target = addMode === "link"
+      ? cloudLinkSectionRef.current
+      : addMode === "pdf"
+        ? localPdfSectionRef.current
+        : null;
+
+    if (!target) {
+      return;
+    }
+
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    target.focus({ preventScroll: true });
+  }, [addMode]);
 
   async function removeLink(id: string) {
     await studyDatabase.settings.put({
@@ -94,7 +114,11 @@ export function StudyMaterialsPage() {
         )}
       </section>
 
-      <section className="content-panel material-option-panel">
+      <section
+        className="content-panel material-option-panel"
+        ref={cloudLinkSectionRef}
+        tabIndex={-1}
+      >
         <div>
           <p className="eyebrow">Option 1</p>
           <h3>Add a cloud link</h3>
@@ -108,7 +132,11 @@ export function StudyMaterialsPage() {
         <CloudLinkForm savedLinks={savedLinks} existingLinks={links} onMessage={setMessage} />
       </section>
 
-      <section className="content-panel material-option-panel">
+      <section
+        className="content-panel material-option-panel"
+        ref={localPdfSectionRef}
+        tabIndex={-1}
+      >
         <div>
           <p className="eyebrow">Option 2</p>
           <h3>Add a PDF from this device</h3>
